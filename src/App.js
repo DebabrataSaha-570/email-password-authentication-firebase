@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
@@ -10,6 +10,7 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('')
   const [error, setError] = useState('');
+  const [isLoggedIn, setLoggedIn] = useState(false)
 
   const handleGoogleSignIn = () => {
     const auth = getAuth();
@@ -38,6 +39,24 @@ function App() {
       setError('password must contain two upper case')
       return;
     }
+    isLoggedIn ? processLogin(email, password) : createNewUser(email, password)
+  }
+
+  const processLogin = (email, password) => {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user)
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  }
+  const createNewUser = (email, password) => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -53,7 +72,6 @@ function App() {
         console.log(errorCode, errorMessage)
         // ..
       });
-
   }
 
   const handleEmailChange = (event) => {
@@ -63,11 +81,15 @@ function App() {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value)
   }
+
+  const toggleLogIn = (e) => {
+    setLoggedIn(e.target.checked)
+  }
   return (
-    <div className="text-center container">
+    <div className=" container">
 
       <form onSubmit={handleRegistration} className=" my-5">
-        <h3 className="text-primary">Please Register</h3>
+        <h3 className="text-primary">Please {isLoggedIn ? 'Log in' : 'Register'}</h3>
         <div className="row mb-3">
           <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
           <div className="col-sm-10">
@@ -79,11 +101,23 @@ function App() {
           <div className="col-sm-10">
             <input onBlur={handlePasswordChange} type="password" className="form-control" id="inputPassword3" required />
           </div>
+          <div class="row mb-3">
+            <div class="col-sm-10 offset-sm-2">
+              <div class="form-check">
+                <input onChange={toggleLogIn} class="form-check-input" type="checkbox" id="gridCheck1" />
+                <label class="form-check-label" for="gridCheck1">
+                  Already Registered?
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="text-danger">
           {error}
         </div>
-        <button type="submit" className="btn btn-primary">Register</button>
+        <button type="submit" className="btn btn-primary">
+          {isLoggedIn ? 'Login' : 'Register'}
+        </button>
       </form>
 
 
