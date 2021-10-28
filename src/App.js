@@ -1,4 +1,5 @@
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
 
@@ -6,6 +7,9 @@ InitializeAuthentication()
 const googleProvider = new GoogleAuthProvider();
 
 function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('')
+
   const handleGoogleSignIn = () => {
     const auth = getAuth();
     signInWithPopup(auth, googleProvider)
@@ -22,13 +26,42 @@ function App() {
       });
   }
   const handleRegistration = (event) => {
-    console.log('registration will be added')
+    console.log(email, password)
 
     //form er default refresh behaiviour bondhor korar ninja techinic. 
     event.preventDefault()
   }
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value)
+  }
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value)
+  }
   return (
-    <div className="App">
+    <div className="text-center container">
+
+      <form onSubmit={handleRegistration} className=" my-5">
+        <h3 className="text-primary">Please Register</h3>
+        <div class="row mb-3">
+          <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
+          <div class="col-sm-10">
+            <input onBlur={handleEmailChange} type="email" class="form-control" id="inputEmail3" />
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
+          <div class="col-sm-10">
+            <input onBlur={handlePasswordChange} type="password" class="form-control" id="inputPassword3" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sign in</button>
+      </form>
+
+
+      {/* regular form  */}
       <form onSubmit={handleRegistration}>
         <h3>Please Register</h3>
         <label htmlFor="email">Email: </label>
@@ -39,6 +72,8 @@ function App() {
         <br />
         <input type="submit" value="Register" />
       </form>
+
+
       <br /><br /><br />
       <br /><br /><br />
       <div>-----------------------</div>
