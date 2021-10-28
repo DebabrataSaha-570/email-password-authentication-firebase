@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
@@ -7,6 +7,7 @@ InitializeAuthentication()
 const googleProvider = new GoogleAuthProvider();
 
 function App() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('')
   const [error, setError] = useState('');
@@ -65,6 +66,7 @@ function App() {
         console.log(user)
         setError('')
         verifyEmail()
+        setUserName();
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -82,6 +84,9 @@ function App() {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value)
   }
+  const handleNameChange = (event) => {
+    setName(event.target.value)
+  }
 
   const toggleLogIn = (e) => {
     setLoggedIn(e.target.checked)
@@ -92,6 +97,18 @@ function App() {
       .then((result) => {
         console.log(result)
       });
+  }
+  const setUserName = () => {
+    const auth = getAuth();
+    updateProfile(auth.currentUser, {
+      displayName: name,
+    }).then(() => {
+      // Profile updated!
+      // ...
+    }).catch((error) => {
+      // An error occurred
+      // ...
+    });
   }
 
   const handleResetPassword = () => {
@@ -115,6 +132,16 @@ function App() {
 
       <form onSubmit={handleRegistration} className=" my-5">
         <h3 className="text-primary">Please {isLoggedIn ? 'Log in' : 'Register'}</h3>
+
+        {!isLoggedIn && <div className="row mb-3">
+          <label htmlFor="inputName" className="col-sm-2 col-form-label">Name: </label>
+          <div className="col-sm-10">
+            <input onBlur={handleNameChange} type="text" class="form-control" id="inputName" placeholder="Your Name" />
+          </div>
+        </div>}
+
+
+
         <div className="row mb-3">
           <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
           <div className="col-sm-10">
