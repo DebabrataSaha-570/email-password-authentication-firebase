@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
@@ -49,7 +49,7 @@ function App() {
         // Signed in 
         const user = userCredential.user;
         console.log(user)
-        // ...
+        setError('')
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -64,6 +64,7 @@ function App() {
         const user = userCredential.user;
         console.log(user)
         setError('')
+        verifyEmail()
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -84,6 +85,30 @@ function App() {
 
   const toggleLogIn = (e) => {
     setLoggedIn(e.target.checked)
+  }
+  const verifyEmail = () => {
+    const auth = getAuth();
+    sendEmailVerification(auth.currentUser)
+      .then((result) => {
+        console.log(result)
+      });
+  }
+
+  const handleResetPassword = () => {
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert('Reset Email Sent. Check your email')
+        // Password reset email sent!
+        // ..
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+        // ..
+      });
+
   }
   return (
     <div className=" container">
@@ -118,6 +143,8 @@ function App() {
         <button type="submit" className="btn btn-primary">
           {isLoggedIn ? 'Login' : 'Register'}
         </button>
+        <br />
+        <button onClick={handleResetPassword} type="button" class="btn btn-primary btn-sm mt-2">Reset Password</button>
       </form>
 
 
