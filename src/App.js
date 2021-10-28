@@ -1,4 +1,4 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
@@ -27,6 +27,19 @@ function App() {
   }
   const handleRegistration = (event) => {
     console.log(email, password)
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user)
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+        // ..
+      });
 
     //form er default refresh behaiviour bondhor korar ninja techinic. 
     event.preventDefault()
@@ -44,20 +57,20 @@ function App() {
 
       <form onSubmit={handleRegistration} className=" my-5">
         <h3 className="text-primary">Please Register</h3>
-        <div class="row mb-3">
-          <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-          <div class="col-sm-10">
-            <input onBlur={handleEmailChange} type="email" class="form-control" id="inputEmail3" />
+        <div className="row mb-3">
+          <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
+          <div className="col-sm-10">
+            <input onBlur={handleEmailChange} type="email" className="form-control" id="inputEmail3" required />
           </div>
         </div>
-        <div class="row mb-3">
-          <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-          <div class="col-sm-10">
-            <input onBlur={handlePasswordChange} type="password" class="form-control" id="inputPassword3" />
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Password</label>
+          <div className="col-sm-10">
+            <input onBlur={handlePasswordChange} type="password" className="form-control" id="inputPassword3" required />
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Sign in</button>
+        <button type="submit" className="btn btn-primary">Register</button>
       </form>
 
 
