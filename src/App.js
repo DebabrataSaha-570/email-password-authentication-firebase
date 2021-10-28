@@ -9,6 +9,7 @@ const googleProvider = new GoogleAuthProvider();
 function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('');
 
   const handleGoogleSignIn = () => {
     const auth = getAuth();
@@ -26,23 +27,33 @@ function App() {
       });
   }
   const handleRegistration = (event) => {
+    //form er default refresh behaiviour bondhor korar ninja techinic. 
+    event.preventDefault()
     console.log(email, password)
+    if (password.length < 6) {
+      setError('password must be at least 6 character long ')
+      return;
+    }
+    if (!/(?=.*[A-Z].*[A-Z])/.test(password)) {
+      setError('password must contain two upper case')
+      return;
+    }
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
         console.log(user)
+        setError('')
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        setError(errorMessage)
         console.log(errorCode, errorMessage)
         // ..
       });
 
-    //form er default refresh behaiviour bondhor korar ninja techinic. 
-    event.preventDefault()
   }
 
   const handleEmailChange = (event) => {
@@ -69,7 +80,9 @@ function App() {
             <input onBlur={handlePasswordChange} type="password" className="form-control" id="inputPassword3" required />
           </div>
         </div>
-
+        <div className="text-danger">
+          {error}
+        </div>
         <button type="submit" className="btn btn-primary">Register</button>
       </form>
 
@@ -89,6 +102,7 @@ function App() {
 
       <br /><br /><br />
       <br /><br /><br />
+
       <div>-----------------------</div>
       <button onClick={handleGoogleSignIn}>Google SignIn</button>
     </div>
