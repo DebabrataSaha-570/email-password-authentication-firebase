@@ -1,10 +1,11 @@
-import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, updateProfile } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, updateProfile, FacebookAuthProvider } from "firebase/auth";
 import { useState } from "react";
 import './App.css';
 import InitializeAuthentication from "./Firebase/firebase.initialize";
 
 InitializeAuthentication()
 const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 function App() {
   const [name, setName] = useState('')
@@ -26,6 +27,22 @@ function App() {
         const errorMessage = error.message;
         const email = error.email;
         const credential = GoogleAuthProvider.credentialFromError(error);
+      });
+  }
+  const handleFacebookSignIn = () => {
+    const auth = getAuth();
+    signInWithPopup(auth, facebookProvider)
+      .then((result) => {
+        const user = result.user;
+        console.log(user)
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        const accessToken = credential.accessToken;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.email;
+        const credential = FacebookAuthProvider.credentialFromError(error);
       });
   }
   const handleRegistration = (event) => {
@@ -192,7 +209,8 @@ function App() {
       <br /><br /><br />
 
       <div>-----------------------</div>
-      <button onClick={handleGoogleSignIn}>Google SignIn</button>
+      <button class="btn btn-success" onClick={handleGoogleSignIn}>Google SignIn</button>
+      <button onClick={handleFacebookSignIn} class="btn btn-danger mx-1">Facebook SignIn</button>
     </div>
   );
 }
